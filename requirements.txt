@@ -1,0 +1,15 @@
+aiomqtt==1.1.0
+async-timeout==4.0.3
+bleak==0.20.2
+cffi==1.15.1
+dbus-fast==1.95.2
+grovepi==1.0.4
+numpy==1.21.6
+paho-mqtt==1.6.1
+pkg-resources==0.0.0
+pycparser==2.21
+pyserial==3.5
+RPi.GPIO==0.7.1
+scipy==1.7.3
+smbus-cffi==0.5.1
+typing-extensions==4.7.1
