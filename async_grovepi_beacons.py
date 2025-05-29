@@ -16,6 +16,7 @@ from async_proximity import proximity_sensor
 
 
 MQTT_BROKER = "broker.mqttdashboard.com"
+#MQTT_BROKER = "macbook-Pro-de-Remi.local"
 MQTT_PORT = 1883
 # On utilise le nom d'hôte comme localisation
 room_id = socket.gethostname()
@@ -37,9 +38,9 @@ async def main():
     async with Client(MQTT_BROKER, MQTT_PORT, keepalive=60) as client:
         shutdown_event.clear()
         await asyncio.gather(
-            sound_sensor(client, room_id, shutdown_event),
-            light_sensor(client, room_id, shutdown_event),
-            temperature_humidity_sensor(client, room_id, shutdown_event),
+            #sound_sensor(client, room_id, shutdown_event),
+            #light_sensor(client, room_id, shutdown_event),
+            #temperature_humidity_sensor(client, room_id, shutdown_event),
             proximity_sensor(client,room_id, shutdown_event),
             return_exceptions=True)  # Handle exceptions in tasks
     # The 'async with' block handles client.close() automatically

@@ -38,7 +38,23 @@ THE SOFTWARE.
 '''
 
 import time
+import socket
+import json
 import grovepi
+import paho.mqtt.client as mqtt
+
+#MQTT_BROKER = "broker.mqttdashboard.com"
+MQTT_BROKER = "macbook-Pro-de-Remi.local"
+MQTT_PORT = 1883
+SOUND_SENSOR_TYPE = "grove_L358"
+SOUND_TOPIC = "pemesa/sound"
+
+# On utilise le nom d'hôte comme localisation
+room_id = socket.gethostname()
+
+mqttc = mqtt.Client()
+mqttc.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
+mqttc.loop_start()
 
 # Connect the Grove Sound Sensor to analog port A0
 # SIG,NC,VCC,GND
@@ -46,14 +62,24 @@ sound_sensor = 0
 
 grovepi.pinMode(sound_sensor,"INPUT")
 
+timing = 5 # Averaging sound over 5 seconds
+polling_interval = 100 # reading 10 times per second
 
 while True:
-    try:
-        # Read the sound level
-        sensor_value = grovepi.analogRead(sound_sensor)
+        try:
+                average = 0
+                for i in range(timing * polling_interval):
+                        # Read the sound level
+                        sensor_value = grovepi.analogRead(sound_sensor)
+                        #print("sensor_value = %d" %sensor_value)
+                        average = ((average * i) + sensor_value) / (i + 1)
+                        time.sleep(1 / polling_interval)
+                sound_reading = {"room_id" : room_id, "sensor_type" : SOUND_SENSOR_TYPE, "sound" : average}
+                sound_payload = json.dumps(sound_reading, ensure_ascii=False)
+                print(sound_payload)
+                mqttc.publish(SOUND_TOPIC, sound_payload)
+        except Exception as error:
+                print(f"Error : {error}")
+                break
+mqttc.loop_stop()
 
-        print("sensor_value = %d" %sensor_value)
-        time.sleep(.5)
-
-    except IOError:
-        print ("Error")
